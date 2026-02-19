@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+# Instalar pytest sin usar caché de pip
+# Esto asegura que siempre tenemos la versión más reciente disponible
+RUN pip install --no-cache-dir \
+    pytest==9.0.2 \
+    pluggy \
+    packaging \
+    iniconfig \
+    pygments
+
+# Crear usuario sin privilegios para ejecución segura
+RUN useradd -m -u 1000 testuser
+
+# Establecer directorio de trabajo
+WORKDIR /tests
+
+# Cambiar permisos para que el usuario pueda leer pero no escribir
+RUN chmod 755 /tests
+
+# Ejecutar como testuser (sin root)
+USER testuser
+
+# No usar ENTRYPOINT para permitir comandos personalizados
+# Permitir que docker run pueda especificar el comando
+CMD ["pytest", "--help"]
+
+
