@@ -1,4 +1,4 @@
-# AI Test Generator
+# AI Secure Python Test Generator (Docker Sandbox + Groq)
 
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-green)](https://fastapi.tiangolo.com/)
@@ -16,6 +16,13 @@
 - **📊 Professional API** - Status codes, execution timing, error classification
 - **⚙️ Production Configuration** - Memory/CPU limits, non-root execution, network isolation
 - **🚀 Optimized Performance** - Pre-built Docker image with pytest (221MB)
+
+## 🧠 Architecture
+
+1. **Frontend** (React) sends code snippets to the API
+2. **Backend** (FastAPI) validates code and requests tests from Groq
+3. **Sandbox** (Docker) runs pytest with strict resource limits
+4. **API** returns structured results (status, timing, error type)
 
 ## 🛠️ Technology Stack
 
@@ -137,12 +144,15 @@ Returns: Safety assessment without execution
    - 5-second timeout per execution
    - Process limit (64)
 
-✅ **All constraints verified and tested** in `test_sandbox_security.py`
+✅ **All constraints verified and tested** in `scripts/test_sandbox_security.py`
 
 ## 📁 Project Structure
 
 ```
 ai-test-generator/
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions CI
 ├── backend/
 │   ├── app/
 │   │   ├── main.py              # FastAPI app entry
@@ -164,6 +174,8 @@ ai-test-generator/
 │   │   └── index.css
 │   ├── package.json
 │   └── vite.config.ts
+├── scripts/                     # Manual integration checks
+├── tests/                       # Pytest suite
 ├── Dockerfile.sandbox           # Production sandbox image
 ├── Dockerfile.backend           # Backend container
 ├── docker-compose.yml
@@ -211,15 +223,10 @@ The sandbox image includes:
 ### Run Test Suite
 
 ```bash
-# Test sandbox security constraints
-python test_sandbox_security.py
-
-# Test API integration
-python test_professional_api.py
-
-# Test Docker execution
-python test_api_docker.py
+pytest
 ```
+
+Manual integration scripts are available in `scripts/`.
 
 ### Code Quality
 
