@@ -83,7 +83,7 @@ function App() {
                 <li>❌ No se permite: os, subprocess, sys, open()</li>
                 <li>❌ No se permite: eval(), exec(), import</li>
                 <li>✅ Máximo 5000 caracteres</li>
-                <li>⏱️ Timeout: 10 segundos</li>
+                <li>⏱️ Timeout: 10 seconds</li>
               </ul>
             </div>
           </div>
