@@ -27,7 +27,7 @@ Frontend (Vercel)
 Backend (Render)
     ↓ HTTPS
 Sandbox Service (Oracle Cloud VM)
-    ↓ Docker
+   ↓ Docker
 Isolated Test Container
 ```
 

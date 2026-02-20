@@ -8,7 +8,7 @@ Complete deployment guide for AI Test Generator across three free-tier platforms
 Frontend (Vercel)
     ↓ HTTP
 Backend (Render) 
-    ↓ HTTP
+      ↓ HTTP
 Sandbox Service (Oracle Cloud VM)
 ```
 
@@ -26,9 +26,9 @@ Sandbox Service (Oracle Cloud VM)
 
 1. Go to Oracle Cloud Console → Compute → Instances
 2. Create Instance:
-   - Image: Oracle Linux 8 or Ubuntu 22.04
-   - Shape: VM.Standard.E2.1.Micro (Always Free)
-   - Boot Volume: 50 GB
+    - Image: Oracle Linux 8 or Ubuntu 22.04
+    - Shape: VM.Standard.E2.1.Micro (Always Free)
+    - Boot Volume: 50 GB
 3. Download SSH private key
 4. Note public IP address
 
@@ -70,9 +70,9 @@ sudo ufw allow 8001/tcp
 **Important:** Add ingress rule in Oracle Cloud Console:
 - Networking → Virtual Cloud Networks → Your VCN → Security Lists
 - Add Ingress Rule:
-  - Source CIDR: `0.0.0.0/0` (or restrict to Render IPs)
-  - Destination Port: `8001`
-  - IP Protocol: TCP
+   - Source CIDR: `0.0.0.0/0` (or restrict to Render IPs)
+   - Destination Port: `8001`
+   - IP Protocol: TCP
 
 #### 1.4 Deploy Sandbox Service
 
@@ -89,11 +89,11 @@ cd sandbox-service
 docker build -t sandbox-service:latest .
 
 docker run -d \
-  --name sandbox-service \
-  --restart unless-stopped \
-  -p 8001:8001 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  sandbox-service:latest
+   --name sandbox-service \
+   --restart unless-stopped \
+   -p 8001:8001 \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   sandbox-service:latest
 ```
 
 #### 1.5 Verify Deployment
@@ -237,7 +237,7 @@ docker rm sandbox-service
 cd sandbox-service
 docker build -t sandbox-service:latest .
 docker run -d --name sandbox-service --restart unless-stopped -p 8001:8001 \
-  -v /var/run/docker.sock:/var/run/docker.sock sandbox-service:latest
+   -v /var/run/docker.sock:/var/run/docker.sock sandbox-service:latest
 ```
 
 **Connection refused:**
