@@ -5,7 +5,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = FastAPI(title="AI Test Generator")
+app = FastAPI(
+    title="AI Test Generator",
+    description="AI-powered test generation with a hardened Docker sandbox.",
+    version="1.0.0",
+)
 
 # Add CORS middleware
 app.add_middleware(
