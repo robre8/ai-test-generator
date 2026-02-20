@@ -195,6 +195,7 @@ GROQ_API_KEY=your_api_key_here
 LOG_LEVEL=info
 MAX_CODE_LENGTH=5000
 DOCKER_IMAGE=ai-test-sandbox:latest
+VITE_API_URL=http://localhost:8000
 ```
 
 ### Docker Build
@@ -242,6 +243,20 @@ Manual integration scripts are available in `scripts/`.
 ```bash
 docker-compose up -d
 ```
+
+### Vercel (Frontend)
+
+- Root Directory: `frontend`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Env: `VITE_API_URL=https://<your-render-service>.onrender.com`
+
+### Render (Backend)
+
+- Type: Web Service (Docker)
+- Dockerfile: `Dockerfile.backend`
+- Env: `GROQ_API_KEY`
+- Port: `8000`
 
 ### Manual Docker
 

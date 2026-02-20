@@ -15,6 +15,8 @@ function App() {
   const [result, setResult] = useState<TestResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const apiBase = import.meta.env.VITE_API_URL || ''
+  const api = axios.create({ baseURL: apiBase })
 
   const handleGenerateTests = async () => {
     if (!code.trim()) {
@@ -26,7 +28,7 @@ function App() {
     setError('')
 
     try {
-      const response = await axios.post('/api/generate-tests', {
+      const response = await api.post('/api/generate-tests', {
         code: code
       })
       setResult(response.data)

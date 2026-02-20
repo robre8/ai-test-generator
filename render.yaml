@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ai-test-generator-backend
+    env: docker
+    dockerfilePath: ./Dockerfile.backend
+    autoDeploy: true
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /docs
+    plan: free
