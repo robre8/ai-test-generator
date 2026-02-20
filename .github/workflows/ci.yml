@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: ["main"]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -31,16 +35,64 @@ jobs:
 
   docker-build:
     runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_BACKEND: ghcr.io/robre8/ai-test-generator-backend
+      IMAGE_SANDBOX: ghcr.io/robre8/ai-test-generator-sandbox
+      VERSION: v0.1.0
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build backend image
-        run: |
-          docker build -f Dockerfile.backend -t ai-test-backend:ci .
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build sandbox image
-        run: |
-          docker build -f Dockerfile.sandbox -t ai-test-sandbox:ci .
+      - name: Build backend image (CI)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.backend
+          push: false
+          tags: ai-test-backend:ci
+
+      - name: Build and push backend image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.backend
+          push: true
+          tags: |
+            ${{ env.IMAGE_BACKEND }}:${{ env.VERSION }}
+            ${{ env.IMAGE_BACKEND }}:latest
+            ${{ env.IMAGE_BACKEND }}:${{ github.sha }}
+
+      - name: Build sandbox image (CI)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.sandbox
+          push: false
+          tags: ai-test-sandbox:ci
+
+      - name: Build and push sandbox image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.sandbox
+          push: true
+          tags: |
+            ${{ env.IMAGE_SANDBOX }}:${{ env.VERSION }}
+            ${{ env.IMAGE_SANDBOX }}:python-3.11-secure
+            ${{ env.IMAGE_SANDBOX }}:latest
+            ${{ env.IMAGE_SANDBOX }}:${{ github.sha }}
