@@ -48,6 +48,8 @@ Thumbs.db
 # Temp & Logs
 .tmp/
 /tmp/
+temp/
+sandbox/
 *.log
 logs/
 

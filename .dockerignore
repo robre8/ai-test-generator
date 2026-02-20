@@ -19,5 +19,8 @@ node_modules/
 dist/
 build/
 *.md
+.github/
+tests/
+scripts/
 .vscode/
 .idea/
