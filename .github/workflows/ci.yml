@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: ["main"]
+    tags: ["v*"]
   pull_request:
     branches: ["main"]
 
@@ -39,7 +40,6 @@ jobs:
       REGISTRY: ghcr.io
       IMAGE_BACKEND: ghcr.io/robre8/ai-test-generator-backend
       IMAGE_SANDBOX: ghcr.io/robre8/ai-test-generator-sandbox
-      VERSION: v0.1.0
     steps:
       - uses: actions/checkout@v4
 
@@ -53,6 +53,31 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: meta
+        if: github.event_name != 'pull_request'
+        run: |
+          TAGS_BACKEND="${IMAGE_BACKEND}:latest
+          ${IMAGE_BACKEND}:${GITHUB_SHA}"
+          TAGS_SANDBOX="${IMAGE_SANDBOX}:latest
+          ${IMAGE_SANDBOX}:${GITHUB_SHA}
+          ${IMAGE_SANDBOX}:python-3.11-secure"
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            TAGS_BACKEND="${TAGS_BACKEND}
+            ${IMAGE_BACKEND}:${GITHUB_REF_NAME}"
+            TAGS_SANDBOX="${TAGS_SANDBOX}
+            ${IMAGE_SANDBOX}:${GITHUB_REF_NAME}"
+          fi
+
+          echo "tags_backend<<EOF" >> "$GITHUB_OUTPUT"
+          printf "%s\n" "$TAGS_BACKEND" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+          echo "tags_sandbox<<EOF" >> "$GITHUB_OUTPUT"
+          printf "%s\n" "$TAGS_SANDBOX" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Build backend image (CI)
         if: github.event_name == 'pull_request'
@@ -70,10 +95,7 @@ jobs:
           context: .
           file: Dockerfile.backend
           push: true
-          tags: |
-            ${{ env.IMAGE_BACKEND }}:${{ env.VERSION }}
-            ${{ env.IMAGE_BACKEND }}:latest
-            ${{ env.IMAGE_BACKEND }}:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags_backend }}
 
       - name: Build sandbox image (CI)
         if: github.event_name == 'pull_request'
@@ -91,8 +113,4 @@ jobs:
           context: .
           file: Dockerfile.sandbox
           push: true
-          tags: |
-            ${{ env.IMAGE_SANDBOX }}:${{ env.VERSION }}
-            ${{ env.IMAGE_SANDBOX }}:python-3.11-secure
-            ${{ env.IMAGE_SANDBOX }}:latest
-            ${{ env.IMAGE_SANDBOX }}:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags_sandbox }}
