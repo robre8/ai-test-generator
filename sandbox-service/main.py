@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 import subprocess
 import tempfile
 import os
@@ -17,7 +18,7 @@ class ExecutionRequest(BaseModel):
 class ExecutionResponse(BaseModel):
     output: str
     passed: bool
-    error: str | None
+    error: Optional[str] = None
     sandbox: str
 
 
