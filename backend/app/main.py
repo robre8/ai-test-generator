@@ -21,3 +21,8 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix="/api")
+
+@app.get("/health", tags=["health"])
+def health_check():
+    """Health check endpoint for deployment services"""
+    return {"status": "healthy"}
