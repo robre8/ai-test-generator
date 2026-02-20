@@ -7,6 +7,8 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false
+      - key: SANDBOX_SERVICE_URL
+        sync: false  # Set to http://<oracle-vm-ip>:8001
       - key: PYTHONUNBUFFERED
         value: "1"
     healthCheckPath: /docs

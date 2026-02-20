@@ -19,6 +19,19 @@
 
 ## 🧠 Architecture
 
+**Distributed Deployment:**
+
+```
+Frontend (Vercel)
+    ↓ HTTPS
+Backend (Render)
+    ↓ HTTPS
+Sandbox Service (Oracle Cloud VM)
+    ↓ Docker
+Isolated Test Container
+```
+
+**Local Development:**
 1. **Frontend** (React) sends code snippets to the API
 2. **Backend** (FastAPI) validates code and requests tests from Groq
 3. **Sandbox** (Docker) runs pytest with strict resource limits
@@ -189,13 +202,19 @@ ai-test-generator/
 
 ### Environment Variables
 
+**Backend (.env):**
 ```bash
-# .env
 GROQ_API_KEY=your_api_key_here
+SANDBOX_SERVICE_URL=http://localhost:8001  # For development
+# Production: http://<oracle-vm-ip>:8001
 LOG_LEVEL=info
 MAX_CODE_LENGTH=5000
-DOCKER_IMAGE=ai-test-sandbox:latest
-VITE_API_URL=http://localhost:8000
+```
+
+**Frontend (.env):**
+```bash
+VITE_API_URL=http://localhost:8000  # For development
+# Production: https://your-backend.onrender.com
 ```
 
 ### Docker Build
@@ -238,38 +257,30 @@ Manual integration scripts are available in `scripts/`.
 
 ## 🐳 Deployment
 
-### Docker Compose
+**Production deployment uses three free-tier platforms:**
 
-```bash
-docker-compose up -d
-```
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete step-by-step guide.
 
-### Vercel (Frontend)
+### Quick Overview
 
-- Root Directory: `frontend`
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Env: `VITE_API_URL=https://<your-render-service>.onrender.com`
+1. **Oracle Cloud VM** - Sandbox Service
+   - Docker execution environment
+   - Runs on port 8001
+   - Free tier: Always Free VM
 
-### Render (Backend)
+2. **Render** - Backend API
+   - FastAPI application
+   - Connects to Oracle sandbox
+   - Free tier: 750 hours/month
+   - Env: `GROQ_API_KEY`, `SANDBOX_SERVICE_URL`
 
-- Type: Web Service (Docker)
-- Dockerfile: `Dockerfile.backend`
-- Env: `GROQ_API_KEY`
-- Port: `8000`
+3. **Vercel** - Frontend
+   - React TypeScript app
+   - Connects to Render backend
+   - Free tier: Hobby plan
+   - Env: `VITE_API_URL`
 
-### Manual Docker
-
-```bash
-# Build images
-docker build -f Dockerfile.sandbox -t ai-test-sandbox:latest .
-docker build -f Dockerfile.backend -t ai-test-backend:latest .
-
-# Run backend
-docker run -d --name backend -p 8000:8000 \
-  -e GROQ_API_KEY=$GROQ_API_KEY \
-  ai-test-backend:latest
-```
+**Total Cost: $0/month** 🎉
 
 ## 📋 Error Handling
 
